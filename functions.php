@@ -7,5 +7,5 @@
 /**
  * Customizer Framework.
  */
-require get_template_directory() . '/customizer/customizer-framewor.php';
+require get_template_directory() . '/customizer/customizer-framework.php';
 
