@@ -3,7 +3,7 @@
     Plugin Name: WPshed Customizer
     Plugin URI: http://wpshed.com/
     Description: Create an easy to use customizer section for your WordPress theme.
-    Version: 1.0
+    Version: 1.1
     Author: Stefan I.
     Author URI: http://istefan.me/
     License: GNU General Public License v2 or later
@@ -19,6 +19,12 @@ define( 'WPC_URL',          trailingslashit( get_template_directory_uri() ) . ba
 
 define( 'WPC_THEME_CUSTOMIZER',           trailingslashit( WPC_DIR ) . 'customizer.php' );
 define( 'WPC_THEME_CUSTOMIZER_SAMPLE',    trailingslashit( WPC_DIR ) . 'customizer-sample.php' );
+
+
+/**
+ * Rewuire custom control class
+ */
+require_once trailingslashit( WPC_DIR ) . 'inc/class-wp-customize-control.php';
 
 
 /**
@@ -176,17 +182,6 @@ function wpc_customizer_register( $wp_customize ) {
                     ) );
                 break;
 
-                // Textarea Field
-                case 'textarea':
-                    $wp_customize->add_control( esc_attr( $option['id'] ), array(
-                        'type'              => 'textarea',
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    ) );
-                break;
-
                 // Range Field
                 case 'range':
                     $input_attrs  = ( isset( $option['input_attrs'] ) ) ? $option['input_attrs'] : array();
@@ -302,6 +297,67 @@ function wpc_customizer_register( $wp_customize ) {
                     )));
                 break;
 
+                // Textarea Field
+                case 'textarea':
+                    $wp_customize->add_control( new WPC_Customize_Textarea_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Menus Field
+                case 'menus':
+                    $wp_customize->add_control( new WPC_Customize_Menus_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Users Field
+                case 'users':
+                    $wp_customize->add_control( new WPC_Customize_Users_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Posts Field
+                case 'posts':
+                    $wp_customize->add_control( new WPC_Customize_Posts_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Post Types Field
+                case 'post_types':
+                    $wp_customize->add_control( new WPC_Customize_Post_Type_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Tags Field
+                case 'tags':
+                    $wp_customize->add_control( new WPC_Customize_Tags_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+
             }
 
 
@@ -314,40 +370,6 @@ function wpc_customizer_register( $wp_customize ) {
 add_action( 'customize_register', 'wpc_customizer_register' );
 
 
-/**
- * Add categories control
- */
-if( class_exists( 'WP_Customize_Control' ) ):
 
-class WPC_Customize_Categories_Control extends WP_Customize_Control {
-    public $type = 'categories';
- 
-    public function render_content() {
-
-        $dropdown = wp_dropdown_categories(
-            array(
-                'name'              => '_customize-dropdown-categories-' . $this->id,
-                'echo'              => 0,
-                'show_option_none'  => __( '&mdash; Select &mdash;' ),
-                'option_none_value' => '0',
-                'hierarchical'      => 1, 
-                'selected'          => $this->value(),
-            )
-        );
-
-        // Hackily add in the data link parameter.
-        $dropdown = str_replace( '<select', '<select ' . $this->get_link(), $dropdown );
-
-        printf(
-            '<label class="customize-control-select"><span class="customize-control-title">%s</span><span class="description customize-control-description">%s</span> %s</label>',
-            $this->label,
-            esc_html( $this->description ),
-            $dropdown
-        );
-
-    }
-}
-
-endif;
 
 

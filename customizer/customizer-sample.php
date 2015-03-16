@@ -10,7 +10,6 @@ $shortname = 'my_theme_';
 // User access level
 $capability = 'edit_theme_options';
 
-
 /**
  * Here we will set the options we are going to have in the customizer.
  */
@@ -40,8 +39,7 @@ $options[] = array( 'title'             => __( 'Example Panel 2', 'textdomain' )
     Sections
 --------------------------------------------------------------------------------------------------- */
 
-
-$options[] = array( 'title'             => __( 'Example Section', 'textdomain' ), // Section name
+$options[] = array( 'title'             => __( 'Standard Form Fields', 'textdomain' ), // Section name
                     'description'       => __( 'Section description', 'textdomain' ), // Section description
                     'panel'             => $shortname . 'panel_id', // panel
                     'id'                => $shortname . 'section_id', // unique ID
@@ -49,15 +47,15 @@ $options[] = array( 'title'             => __( 'Example Section', 'textdomain' )
                     'theme_supports'    => '',
                     'type'              => 'section' ); // type = section
 
-$options[] = array( 'title'             => __( 'Example Section 2', 'textdomain' ), // Section name
+$options[] = array( 'title'             => __( 'WordPress 4.0+ Fields', 'textdomain' ), // Section name
                     'description'       => __( 'Section description', 'textdomain' ), // Section description
-                    'panel'             => $shortname . 'panel_2', // panel
+                    'panel'             => $shortname . 'panel_id', // panel
                     'id'                => $shortname . 'section_2', // unique ID
                     'priority'          => 10,
                     'theme_supports'    => '',
                     'type'              => 'section' ); // type = section
 
-$options[] = array( 'title'             => __( 'Example Section 3', 'textdomain' ), // Section name
+$options[] = array( 'title'             => __( 'WordPress Data', 'textdomain' ), // Section name
                     'description'       => __( 'Section description', 'textdomain' ), // Section description
                     'panel'             => $shortname . 'panel_2', // panel
                     'id'                => $shortname . 'section_3', // unique ID
@@ -69,63 +67,7 @@ $options[] = array( 'title'             => __( 'Example Section 3', 'textdomain'
     Controls
 --------------------------------------------------------------------------------------------------- */
 
-// URL field
-$options[] = array( 'title'             => __( 'URL Field', 'textdomain' ), // Control label
-                    'description'       => '', // Control description
-                    'section'           => $shortname . 'section_id', // section
-                    'id'                => $shortname . 'url', // unique ID
-                    'default'           => '',
-                    'option'            => 'url',
-                    'sanitize_callback' => 'esc_url',
-                    'type'              => 'control' ); // type = control
-
-// Email field
-$options[] = array( 'title'             => __( 'Email Field', 'textdomain' ), // Control label
-                    'description'       => '', // Control description
-                    'section'           => $shortname . 'section_id', // section
-                    'id'                => $shortname . 'email', // unique ID
-                    'default'           => '',
-                    'option'            => 'email',
-                    'sanitize_callback' => 'sanitize_email',
-                    'type'              => 'control' ); // type = control
-
-// Password field
-$options[] = array( 'title'             => __( 'Password Field', 'textdomain' ), // Control label
-                    'description'       => '', // Control description
-                    'section'           => $shortname . 'section_id', // section
-                    'id'                => $shortname . 'password', // unique ID
-                    'default'           => '',
-                    'option'            => 'password',
-                    'sanitize_callback' => 'sanitize_text_field',
-                    'type'              => 'control' ); // type = control
-
-// Textarea field
-$options[] = array( 'title'             => __( 'Textarea Field', 'textdomain' ), // Control label
-                    'description'       => '', // Control description
-                    'section'           => $shortname . 'section_id', // section
-                    'id'                => $shortname . 'textarea', // unique ID
-                    'default'           => '',
-                    'option'            => 'textarea',
-                    'sanitize_callback' => 'esc_textarea',
-                    'type'              => 'control' ); // type = control
-
-// Range field
-$options[] = array( 'title'             => __( 'Range Field', 'textdomain' ), // Control label
-                    'description'       => '', // Control description
-                    'section'           => $shortname . 'section_id', // section
-                    'id'                => $shortname . 'range', // unique ID
-                    'default'           => 70,
-                    'option'            => 'range',
-                    'sanitize_callback' => '',
-                    'input_attrs'       => array(
-                        'min'   => 0,
-                        'max'   => 100,
-                        'step'  => 1,
-                        'class' => 'example-class',
-                    ),
-                    'type'              => 'control' ); // type = control
-
-// Text field
+// Text field - Example Panel - section 1
 $options[] = array( 'title'             => __( 'Text Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_id', // section
@@ -135,7 +77,17 @@ $options[] = array( 'title'             => __( 'Text Field', 'textdomain' ), // 
                     'sanitize_callback' => 'sanitize_text_field',
                     'type'              => 'control' ); // type = control
 
-// Color Picker field
+// Textarea field - Example Panel - section 1
+$options[] = array( 'title'             => __( 'Textarea Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_id', // section
+                    'id'                => $shortname . 'textarea', // unique ID
+                    'default'           => '',
+                    'option'            => 'textarea',
+                    'sanitize_callback' => 'esc_textarea',
+                    'type'              => 'control' ); // type = control
+
+// Color Picker field - Example Panel - section 1
 $options[] = array( 'title'             => __( 'Color Picker Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_id', // section
@@ -145,7 +97,7 @@ $options[] = array( 'title'             => __( 'Color Picker Field', 'textdomain
                     'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
-// Radio field
+// Radio field - Example Panel - section 1
 $options[] = array( 'title'             => __( 'Radio Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_id', // section
@@ -160,7 +112,7 @@ $options[] = array( 'title'             => __( 'Radio Field', 'textdomain' ), //
                     ),
                     'type'              => 'control' ); // type = control
 
-// Checkbox field
+// Checkbox field - Example Panel - section 1
 $options[] = array( 'title'             => __( 'Checkbox Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_id', // section
@@ -170,7 +122,7 @@ $options[] = array( 'title'             => __( 'Checkbox Field', 'textdomain' ),
                     'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
-// Select field
+// Select field - Example Panel - section 1
 $options[] = array( 'title'             => __( 'Select Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_id', // section
@@ -185,7 +137,7 @@ $options[] = array( 'title'             => __( 'Select Field', 'textdomain' ), /
                     ),
                     'type'              => 'control' ); // type = control
 
-// Image Upload field
+// Image Upload field - Example Panel - section 1
 $options[] = array( 'title'             => __( 'Image Upload Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_id', // section
@@ -195,7 +147,7 @@ $options[] = array( 'title'             => __( 'Image Upload Field', 'textdomain
                     'sanitize_callback' => 'esc_url',
                     'type'              => 'control' ); // type = control
 
-// File Upload field
+// File Upload field - Example Panel - section 1
 $options[] = array( 'title'             => __( 'File Upload Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_id', // section
@@ -205,56 +157,123 @@ $options[] = array( 'title'             => __( 'File Upload Field', 'textdomain'
                     'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
-// Pages field
+
+// URL field - Example Panel - section 2
+$options[] = array( 'title'             => __( 'URL Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_2', // section
+                    'id'                => $shortname . 'url', // unique ID
+                    'default'           => '',
+                    'option'            => 'url',
+                    'sanitize_callback' => 'esc_url',
+                    'type'              => 'control' ); // type = control
+
+// Email field - Example Panel - section 2
+$options[] = array( 'title'             => __( 'Email Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_2', // section
+                    'id'                => $shortname . 'email', // unique ID
+                    'default'           => '',
+                    'option'            => 'email',
+                    'sanitize_callback' => 'sanitize_email',
+                    'type'              => 'control' ); // type = control
+
+// Password field - Example Panel - section 2
+$options[] = array( 'title'             => __( 'Password Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_2', // section
+                    'id'                => $shortname . 'password', // unique ID
+                    'default'           => '',
+                    'option'            => 'password',
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'type'              => 'control' ); // type = control
+
+// Range field - Example Panel - section 2
+$options[] = array( 'title'             => __( 'Range Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_2', // section
+                    'id'                => $shortname . 'range', // unique ID
+                    'default'           => 70,
+                    'option'            => 'range',
+                    'sanitize_callback' => '',
+                    'input_attrs'       => array(
+                        'min'   => 0,
+                        'max'   => 100,
+                        'step'  => 1,
+                        'class' => 'example-class',
+                    ),
+                    'type'              => 'control' ); // type = control
+
+// Pages field - Example Panel 2 - section 3
 $options[] = array( 'title'             => __( 'Pages Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
-                    'section'           => $shortname . 'section_id', // section
+                    'section'           => $shortname . 'section_3', // section
                     'id'                => $shortname . 'pages', // unique ID
                     'default'           => 0,
                     'option'            => 'pages',
                     'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
-// Categories field
+// Categories field - Example Panel 2 - section 3
 $options[] = array( 'title'             => __( 'Categories Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
-                    'section'           => $shortname . 'section_id', // section
+                    'section'           => $shortname . 'section_3', // section
                     'id'                => $shortname . 'categories', // unique ID
                     'default'           => 0,
                     'option'            => 'categories',
                     'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
-
-// Text field - panel 2
-$options[] = array( 'title'             => __( 'Text Field', 'textdomain' ), // Control label
-                    'description'       => '', // Control description
-                    'section'           => $shortname . 'section_2', // section
-                    'id'                => $shortname . 'text_2', // unique ID
-                    'default'           => 'Default value',
-                    'option'            => 'text',
-                    'sanitize_callback' => 'sanitize_text_field',
-                    'type'              => 'control' ); // type = control
-
-// Textarea field - panel 2
-$options[] = array( 'title'             => __( 'Textarea Field', 'textdomain' ), // Control label
-                    'description'       => '', // Control description
-                    'section'           => $shortname . 'section_2', // section
-                    'id'                => $shortname . 'textarea_2', // unique ID
-                    'default'           => '',
-                    'option'            => 'textarea',
-                    'sanitize_callback' => 'esc_textarea',
-                    'type'              => 'control' ); // type = control
-
-// Text field - panel 2
-$options[] = array( 'title'             => __( 'Text Field', 'textdomain' ), // Control label
+// Tags field - Example Panel 2 - section 3
+$options[] = array( 'title'             => __( 'Tags Field', 'textdomain' ), // Control label
                     'description'       => '', // Control description
                     'section'           => $shortname . 'section_3', // section
-                    'id'                => $shortname . 'text_3', // unique ID
-                    'default'           => 'Default value',
-                    'option'            => 'text',
-                    'sanitize_callback' => 'sanitize_text_field',
+                    'id'                => $shortname . 'tags', // unique ID
+                    'default'           => '',
+                    'option'            => 'tags',
+                    'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
+
+// Post Types field - Example Panel 2 - section 3
+$options[] = array( 'title'             => __( 'Post Types Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_3', // section
+                    'id'                => $shortname . 'post_types', // unique ID
+                    'default'           => '',
+                    'option'            => 'post_types',
+                    'sanitize_callback' => '',
+                    'type'              => 'control' ); // type = control
+
+// Posts field - Example Panel 2 - section 3
+$options[] = array( 'title'             => __( 'Posts Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_3', // section
+                    'id'                => $shortname . 'posts', // unique ID
+                    'default'           => '',
+                    'option'            => 'posts',
+                    'sanitize_callback' => '',
+                    'type'              => 'control' ); // type = control
+
+// Users field - Example Panel 2 - section 3
+$options[] = array( 'title'             => __( 'Users Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_3', // section
+                    'id'                => $shortname . 'users', // unique ID
+                    'default'           => '',
+                    'option'            => 'users',
+                    'sanitize_callback' => '',
+                    'type'              => 'control' ); // type = control
+
+// Menus field - Example Panel 2 - section 3
+$options[] = array( 'title'             => __( 'Menus Field', 'textdomain' ), // Control label
+                    'description'       => '', // Control description
+                    'section'           => $shortname . 'section_3', // section
+                    'id'                => $shortname . 'menus', // unique ID
+                    'default'           => '',
+                    'option'            => 'menus',
+                    'sanitize_callback' => '',
+                    'type'              => 'control' ); // type = control
+
                     
 /* ---------------------------------------------------------------------------------------------------
     End Control Options
