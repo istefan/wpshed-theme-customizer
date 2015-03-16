@@ -76,6 +76,7 @@ $options[] = array( 'title'             => __( 'URL Field', 'textdomain' ), // C
                     'id'                => $shortname . 'url', // unique ID
                     'default'           => '',
                     'option'            => 'url',
+                    'sanitize_callback' => 'esc_url',
                     'type'              => 'control' ); // type = control
 
 // Email field
@@ -85,6 +86,7 @@ $options[] = array( 'title'             => __( 'Email Field', 'textdomain' ), //
                     'id'                => $shortname . 'email', // unique ID
                     'default'           => '',
                     'option'            => 'email',
+                    'sanitize_callback' => 'sanitize_email',
                     'type'              => 'control' ); // type = control
 
 // Password field
@@ -94,6 +96,7 @@ $options[] = array( 'title'             => __( 'Password Field', 'textdomain' ),
                     'id'                => $shortname . 'password', // unique ID
                     'default'           => '',
                     'option'            => 'password',
+                    'sanitize_callback' => 'sanitize_text_field',
                     'type'              => 'control' ); // type = control
 
 // Textarea field
@@ -103,6 +106,7 @@ $options[] = array( 'title'             => __( 'Textarea Field', 'textdomain' ),
                     'id'                => $shortname . 'textarea', // unique ID
                     'default'           => '',
                     'option'            => 'textarea',
+                    'sanitize_callback' => 'esc_textarea',
                     'type'              => 'control' ); // type = control
 
 // Range field
@@ -112,6 +116,7 @@ $options[] = array( 'title'             => __( 'Range Field', 'textdomain' ), //
                     'id'                => $shortname . 'range', // unique ID
                     'default'           => 70,
                     'option'            => 'range',
+                    'sanitize_callback' => '',
                     'input_attrs'       => array(
                         'min'   => 0,
                         'max'   => 100,
@@ -127,6 +132,7 @@ $options[] = array( 'title'             => __( 'Text Field', 'textdomain' ), // 
                     'id'                => $shortname . 'text', // unique ID
                     'default'           => 'Default value',
                     'option'            => 'text',
+                    'sanitize_callback' => 'sanitize_text_field',
                     'type'              => 'control' ); // type = control
 
 // Color Picker field
@@ -136,6 +142,7 @@ $options[] = array( 'title'             => __( 'Color Picker Field', 'textdomain
                     'id'                => $shortname . 'color', // unique ID
                     'default'           => '#BADA55', // HEX
                     'option'            => 'color',
+                    'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
 // Radio field
@@ -145,6 +152,7 @@ $options[] = array( 'title'             => __( 'Radio Field', 'textdomain' ), //
                     'id'                => $shortname . 'radio', // unique ID
                     'default'           => 'value2',
                     'option'            => 'radio',
+                    'sanitize_callback' => '',
                     'choices'           => array(
                         'value1' => 'Choice 1',
                         'value2' => 'Choice 2',
@@ -159,6 +167,7 @@ $options[] = array( 'title'             => __( 'Checkbox Field', 'textdomain' ),
                     'id'                => $shortname . 'checkbox', // unique ID
                     'default'           => '', // 1 for checked
                     'option'            => 'checkbox',
+                    'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
 // Select field
@@ -168,6 +177,7 @@ $options[] = array( 'title'             => __( 'Select Field', 'textdomain' ), /
                     'id'                => $shortname . 'select', // unique ID
                     'default'           => 'value2',
                     'option'            => 'select',
+                    'sanitize_callback' => '',
                     'choices'           => array(
                         'value1' => 'Choice 1',
                         'value2' => 'Choice 2',
@@ -182,6 +192,7 @@ $options[] = array( 'title'             => __( 'Image Upload Field', 'textdomain
                     'id'                => $shortname . 'image', // unique ID
                     'default'           => '',
                     'option'            => 'image',
+                    'sanitize_callback' => 'esc_url',
                     'type'              => 'control' ); // type = control
 
 // File Upload field
@@ -191,6 +202,7 @@ $options[] = array( 'title'             => __( 'File Upload Field', 'textdomain'
                     'id'                => $shortname . 'file', // unique ID
                     'default'           => '',
                     'option'            => 'file',
+                    'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
 // Pages field
@@ -200,6 +212,7 @@ $options[] = array( 'title'             => __( 'Pages Field', 'textdomain' ), //
                     'id'                => $shortname . 'pages', // unique ID
                     'default'           => 0,
                     'option'            => 'pages',
+                    'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
 // Categories field
@@ -209,6 +222,7 @@ $options[] = array( 'title'             => __( 'Categories Field', 'textdomain' 
                     'id'                => $shortname . 'categories', // unique ID
                     'default'           => 0,
                     'option'            => 'categories',
+                    'sanitize_callback' => '',
                     'type'              => 'control' ); // type = control
 
 
@@ -219,6 +233,7 @@ $options[] = array( 'title'             => __( 'Text Field', 'textdomain' ), // 
                     'id'                => $shortname . 'text_2', // unique ID
                     'default'           => 'Default value',
                     'option'            => 'text',
+                    'sanitize_callback' => 'sanitize_text_field',
                     'type'              => 'control' ); // type = control
 
 // Textarea field - panel 2
@@ -228,6 +243,7 @@ $options[] = array( 'title'             => __( 'Textarea Field', 'textdomain' ),
                     'id'                => $shortname . 'textarea_2', // unique ID
                     'default'           => '',
                     'option'            => 'textarea',
+                    'sanitize_callback' => 'esc_textarea',
                     'type'              => 'control' ); // type = control
 
 // Text field - panel 2
@@ -237,6 +253,7 @@ $options[] = array( 'title'             => __( 'Text Field', 'textdomain' ), // 
                     'id'                => $shortname . 'text_3', // unique ID
                     'default'           => 'Default value',
                     'option'            => 'text',
+                    'sanitize_callback' => 'sanitize_text_field',
                     'type'              => 'control' ); // type = control
                     
 /* ---------------------------------------------------------------------------------------------------

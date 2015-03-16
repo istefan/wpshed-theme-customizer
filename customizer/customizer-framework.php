@@ -129,34 +129,7 @@ function wpc_customizer_register( $wp_customize ) {
             $title          = ( isset( $option['title'] ) ) ? esc_attr( $option['title'] ) : __( 'Untitled Section', 'wpc' );
             $description    = ( isset( $option['description'] ) ) ? esc_attr( $option['description'] ) : '';
             $form_field     = ( isset( $option['option'] ) ) ? esc_attr( $option['option'] ) : 'option';
- 
-            $sanitize_callback = '';
-
-            // Sanitize control
-            switch ( $form_field ) {
-
-                // URL Field
-                case 'url':
-                case 'image':
-                    $sanitize_callback = 'esc_url';
-                break;
-
-                // Email Field
-                case 'url':
-                    $sanitize_callback = 'sanitize_email';
-                break;
-
-                // Password Field
-                case 'password':
-                    $sanitize_callback = 'sanitize_text_field';
-                break;
-
-                // Textarea Field
-                case 'textarea':
-                    $sanitize_callback = 'esc_textarea';
-                break;
-
-            }
+            $sanitize_callback = ( isset( $option['sanitize_callback'] ) ) ? esc_attr( $option['sanitize_callback'] ) : '';
 
             // Add control settings
             $wp_customize->add_setting( esc_attr( $option['id'] ), array(
