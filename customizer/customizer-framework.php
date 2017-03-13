@@ -1,65 +1,41 @@
 <?php
-/*
-    Plugin Name: WPshed Customizer
-    Plugin URI: http://wpshed.com/
-    Description: Create an easy to use customizer section for your WordPress theme.
-    Version: 1.1
-    Author: Stefan I.
-    Author URI: http://istefan.me/
-    License: GNU General Public License v2 or later
-    License URI: http://www.gnu.org/licenses/gpl-2.0.html
-*/
-
-
 /**
- * This function defines the WPC constants
- */
-define( 'WPC_DIR',          trailingslashit( get_template_directory() ) . basename( dirname( __FILE__ ) ) );
-define( 'WPC_URL',          trailingslashit( get_template_directory_uri() ) . basename( dirname( __FILE__ ) ) );
-
-define( 'WPC_THEME_CUSTOMIZER',           trailingslashit( WPC_DIR ) . 'customizer.php' );
-define( 'WPC_THEME_CUSTOMIZER_SAMPLE',    trailingslashit( WPC_DIR ) . 'customizer-sample.php' );
-
-
-/**
- * Rewuire custom control class
- */
-require_once trailingslashit( WPC_DIR ) . 'inc/class-wp-customize-control.php';
-
-
-/**
- * Detect support for Customizer panels.
- * This feature was introduced in WP 4.0.
+ * Customizer Framework.
+ * Version: 1.2
  *
- * @return bool.
+ * @link https://wpshed.com/wordpress/wordpress-theme-customizer-framework/
+ *
+ * @package WPshed Customizer Framework
  */
-function wpc_panel_support() {
-    return ( class_exists( 'WP_Customize_Manager' ) && method_exists( 'WP_Customize_Manager', 'add_panel' ) ) || function_exists( 'wp_validate_boolean' );
-}
 
 
 /**
- * Define WPC settings file
+ * Define constants
  */
-function wpc_customizer_file() {
+define( 'WPSHED_CF_DIR', trailingslashit( get_template_directory() ) . basename( dirname( __FILE__ ) ) );
+define( 'WPSHED_CF_THEME_OPTIONS', trailingslashit( WPSHED_CF_DIR ) . 'theme-options.php' );
+define( 'WPSHED_CF_THEME_SAMPLE_OPTIONS', trailingslashit( WPSHED_CF_DIR ) . 'customizer-examples.php' );
 
-    if ( file_exists( WPC_THEME_CUSTOMIZER ) ) {
-        $customizer_options = WPC_THEME_CUSTOMIZER;
+
+/**
+ * Locate settings file
+ */
+function wpshed_cf_options_file() {
+    if ( file_exists( WPSHED_CF_THEME_OPTIONS ) ) {
+        $customizer_options = WPSHED_CF_THEME_OPTIONS;
     } else {
-        $customizer_options = WPC_THEME_CUSTOMIZER_SAMPLE;
+        $customizer_options = WPSHED_CF_THEME_SAMPLE_OPTIONS;
     }
-
     return $customizer_options;
-
 }
 
 
 /**
- * Register WPC Settings.
+ * Register Settings
  */
-function wpc_register_settings() {
-
-    require_once wpc_customizer_file();
+function wpshed_cf_register_settings() {
+    $options = array();
+    require_once wpshed_cf_options_file();
 
     foreach ( $options as $option ) {
         if ( $option['type'] != 'panel' && $option['type'] != 'section' ) {
@@ -68,31 +44,35 @@ function wpc_register_settings() {
             }
         }
     }
-
-
 }
-add_action( 'after_switch_theme', 'wpc_register_settings' );
+add_action( 'after_switch_theme', 'wpshed_cf_register_settings' );
 
 
 /**
- * Define WPC settings file
+ * Register Customizer
  */
-function wpc_customizer_register( $wp_customize ) {
+function wpshed_cf_customizer_register( $wp_customize ) {
+
+    // User access level
+    $capability = 'edit_theme_options';
+
+    // Option type
+    $type = 'theme_mod'; // option / theme_mod
+
+    $options = array();
 
     // Require customizer options file
-    require_once wpc_customizer_file();
-
-    $type = 'option'; // option / theme_mod
+    require_once wpshed_cf_options_file();
 
     $i = 0;
     foreach ( $options as $option ) {
 
-        // Add panel - WP 4.0+ only
-        if ( $option['type'] == 'panel' && wpc_panel_support() ) {
+        // Add panel
+        if ( $option['type'] == 'panel' ) {
 
             $priority       = ( isset( $option['priority'] ) ) ? $option['priority'] : $i + 10;
             $theme_supports = ( isset( $option['theme_supports'] ) ) ? $option['theme_supports'] : '';
-            $title          = ( isset( $option['title'] ) ) ? esc_attr( $option['title'] ) : __( 'Untitled Panel', 'wpc' );
+            $title          = ( isset( $option['title'] ) ) ? esc_attr( $option['title'] ) : __( 'Untitled Panel', 'text-domain' );
             $description    = ( isset( $option['description'] ) ) ? esc_attr( $option['description'] ) : '';
 
             $wp_customize->add_panel( $option['id'], array(
@@ -110,7 +90,7 @@ function wpc_customizer_register( $wp_customize ) {
 
             $priority       = ( isset( $option['priority'] ) ) ? $option['priority'] : $i + 10;
             $theme_supports = ( isset( $option['theme_supports'] ) ) ? $option['theme_supports'] : '';
-            $title          = ( isset( $option['title'] ) ) ? esc_attr( $option['title'] ) : __( 'Untitled Section', 'wpc' );
+            $title          = ( isset( $option['title'] ) ) ? esc_attr( $option['title'] ) : __( 'Untitled Section', 'text-domain' );
             $description    = ( isset( $option['description'] ) ) ? esc_attr( $option['description'] ) : '';
             $panel          = ( isset( $option['panel'] ) ) ? esc_attr( $option['panel'] ) : '';
 
@@ -132,10 +112,17 @@ function wpc_customizer_register( $wp_customize ) {
             $section        = ( isset( $option['section'] ) ) ? esc_attr( $option['section'] ) : '';
             $default        = ( isset( $option['default'] ) ) ? $option['default'] : '';
             $transport      = ( isset( $option['transport'] ) ) ? esc_attr( $option['transport'] ) : 'refresh';
-            $title          = ( isset( $option['title'] ) ) ? esc_attr( $option['title'] ) : __( 'Untitled Section', 'wpc' );
+            $title          = ( isset( $option['title'] ) ) ? esc_attr( $option['title'] ) : __( 'Untitled Section', 'text-domain' );
             $description    = ( isset( $option['description'] ) ) ? esc_attr( $option['description'] ) : '';
             $form_field     = ( isset( $option['option'] ) ) ? esc_attr( $option['option'] ) : 'option';
             $sanitize_callback = ( isset( $option['sanitize_callback'] ) ) ? esc_attr( $option['sanitize_callback'] ) : '';
+            $width          = ( isset( $option['width'] ) ) ? $option['width'] : '';
+            $height         = ( isset( $option['height'] ) ) ? $option['height'] : '';
+            $flex_width     = ( isset( $option['flex_width'] ) ) ? $option['flex_width'] : '';
+            $flex_height    = ( isset( $option['flex_height'] ) ) ? $option['flex_height'] : '';
+            $placeholder    = ( isset( $option['placeholder'] ) ) ? $option['placeholder'] : __( 'No file selected', 'text-domain' );
+            $frame_title    = ( isset( $option['frame_title'] ) ) ? $option['frame_title'] : __( 'Select File', 'text-domain' );
+            $frame_button   = ( isset( $option['frame_button'] ) ) ? $option['frame_button'] : __( 'Choose File', 'text-domain' );
 
             // Add control settings
             $wp_customize->add_setting( esc_attr( $option['id'] ), array(
@@ -196,6 +183,20 @@ function wpc_customizer_register( $wp_customize ) {
                     ) );
                 break;
 
+                // Number Field
+                case 'number':
+                    $input_attrs  = ( isset( $option['input_attrs'] ) ) ? $option['input_attrs'] : array();
+
+                    $wp_customize->add_control( esc_attr( $option['id'] ), array(
+                        'type'              => 'number',
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                        'input_attrs'       => $input_attrs,
+                    ) );
+                break;
+
                 // Text Field
                 case 'text':
                     $wp_customize->add_control( esc_attr( $option['id'] ), array(
@@ -246,6 +247,87 @@ function wpc_customizer_register( $wp_customize ) {
                     ) );
                 break;
 
+                // Pages Field
+                case 'pages':
+                    $wp_customize->add_control( esc_attr( $option['id'] ), array(
+                        'type'              => 'dropdown-pages',
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    ) );
+                break;
+
+                // Categories Field
+                case 'categories':
+                    $wp_customize->add_control( new WPshed_Customize_Categories_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Textarea Field
+                case 'textarea':
+                    $wp_customize->add_control( new WPshed_Customize_Textarea_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Menus Field
+                case 'menus':
+                    $wp_customize->add_control( new WPshed_Customize_Menus_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Users Field
+                case 'users':
+                    $wp_customize->add_control( new WPshed_Customize_Users_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Posts Field
+                case 'posts':
+                    $wp_customize->add_control( new WPshed_Customize_Posts_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Post Types Field
+                case 'post_types':
+                    $wp_customize->add_control( new WPshed_Customize_Post_Type_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
+                // Tags Field
+                case 'tags':
+                    $wp_customize->add_control( new WPshed_Customize_Tags_Control( $wp_customize, esc_attr( $option['id'] ), array(
+                        'priority'          => $priority,
+                        'section'           => $section,
+                        'label'             => $title,
+                        'description'       => $description,
+                    )));
+                break;
+
                 // Image Upload Field
                 case 'image':
                     $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, esc_attr( $option['id'] ), array(
@@ -276,88 +358,6 @@ function wpc_customizer_register( $wp_customize ) {
                     )));
                 break;
 
-                // Pages Field
-                case 'pages':
-                    $wp_customize->add_control( esc_attr( $option['id'] ), array(
-                        'type'              => 'dropdown-pages',
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    ) );
-                break;
-
-                // Categories Field
-                case 'categories':
-                    $wp_customize->add_control( new WPC_Customize_Categories_Control( $wp_customize, esc_attr( $option['id'] ), array(
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    )));
-                break;
-
-                // Textarea Field
-                case 'textarea':
-                    $wp_customize->add_control( new WPC_Customize_Textarea_Control( $wp_customize, esc_attr( $option['id'] ), array(
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    )));
-                break;
-
-                // Menus Field
-                case 'menus':
-                    $wp_customize->add_control( new WPC_Customize_Menus_Control( $wp_customize, esc_attr( $option['id'] ), array(
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    )));
-                break;
-
-                // Users Field
-                case 'users':
-                    $wp_customize->add_control( new WPC_Customize_Users_Control( $wp_customize, esc_attr( $option['id'] ), array(
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    )));
-                break;
-
-                // Posts Field
-                case 'posts':
-                    $wp_customize->add_control( new WPC_Customize_Posts_Control( $wp_customize, esc_attr( $option['id'] ), array(
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    )));
-                break;
-
-                // Post Types Field
-                case 'post_types':
-                    $wp_customize->add_control( new WPC_Customize_Post_Type_Control( $wp_customize, esc_attr( $option['id'] ), array(
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    )));
-                break;
-
-                // Tags Field
-                case 'tags':
-                    $wp_customize->add_control( new WPC_Customize_Tags_Control( $wp_customize, esc_attr( $option['id'] ), array(
-                        'priority'          => $priority,
-                        'section'           => $section,
-                        'label'             => $title,
-                        'description'       => $description,
-                    )));
-                break;
-
-
             }
 
 
@@ -367,9 +367,292 @@ function wpc_customizer_register( $wp_customize ) {
     }
 
 }
-add_action( 'customize_register', 'wpc_customizer_register' );
+add_action( 'customize_register', 'wpshed_cf_customizer_register' );
 
 
+/**
+ * Customizer custom control classes
+ */
+if( ! class_exists( 'WP_Customize_Control' ) )
+     return;
 
 
+/**
+ * Add Textarea control
+ */
+class WPshed_Customize_Textarea_Control extends WP_Customize_Control {
+    
+    public $type = 'textarea';
 
+    // Render the content
+    public function render_content() {
+        ?>
+        <label>
+            <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+            <?php if ( ! empty( $this->description ) ) : ?>
+            <span class="description customize-control-description"><?php echo $this->description; ?></span>
+            <?php endif; ?>
+            <textarea class="large-text" cols="20" rows="5" <?php $this->link(); ?>>
+                <?php echo esc_textarea( $this->value() ); ?>
+            </textarea>
+        </label>
+        <?php
+    }
+
+}
+
+
+/**
+ * Add Categories control
+ */
+class WPshed_Customize_Categories_Control extends WP_Customize_Control {
+
+    public $type = 'categories';
+ 
+    // Render the content
+    public function render_content() {
+
+        $dropdown = wp_dropdown_categories(
+            array(
+                'name'              => '_customize-dropdown-categories-' . $this->id,
+                'echo'              => 0,
+                'show_option_none'  => __( '&mdash; Select &mdash;', 'text-domain' ),
+                'option_none_value' => '0',
+                'hierarchical'      => 1, 
+                'selected'          => $this->value(),
+            )
+        );
+
+        // Hackily add in the data link parameter.
+        $dropdown = str_replace( '<select', '<select ' . $this->get_link(), $dropdown );
+
+        printf(
+            '<label class="customize-control-select"><span class="customize-control-title">%s</span><span class="description customize-control-description">%s</span> %s</label>',
+            $this->label,
+            esc_html( $this->description ),
+            $dropdown
+        );
+
+    }
+}
+
+
+/**
+ * Add Menus control
+ */
+class WPshed_Customize_Menus_Control extends WP_Customize_Control {
+
+    public $type = 'menus';
+    private $menus = false;
+
+    public function __construct( $manager, $id, $args = array(), $options = array() ) {
+        
+        $this->menus = wp_get_nav_menus( $options );
+        parent::__construct( $manager, $id, $args );
+
+    }
+
+    // Render the content
+    public function render_content() {
+
+        if( empty( $this->menus ) )
+            return;
+            ?>
+
+            <label class="customize-control-select">
+                <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+                <?php if ( ! empty( $this->description ) ) : ?>
+                <span class="description customize-control-description"><?php echo $this->description; ?></span>
+                <?php endif; ?>
+                <select <?php $this->link(); ?>>
+                <option value=""><?php _e( '&mdash; Select &mdash;', 'text-domain' ); ?></option>
+                <?php 
+                    foreach ( $this->menus as $menu ) {
+                        printf( '<option value="%s" %s>%s</option>', 
+                            $menu->term_id,
+                            selected( $this->value(), $menu->term_id, false ),
+                            $menu->name
+                        );
+                    }
+                ?>
+                </select>
+            </label>
+        <?php
+    }
+}
+
+
+/**
+ * Add Users control
+ */
+class WPshed_Customize_Users_Control extends WP_Customize_Control {
+
+    public $type = 'users';
+    private $users = false;
+
+    public function __construct( $manager, $id, $args = array(), $options = array() ) {
+        
+        $this->users = get_users( $options );
+        parent::__construct( $manager, $id, $args );
+
+    }
+
+    // Render the content
+    public function render_content() {
+
+        if( empty( $this->users) )
+            return;
+            ?>
+
+            <label class="customize-control-select">
+                <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+                <?php if ( ! empty( $this->description ) ) : ?>
+                <span class="description customize-control-description"><?php echo $this->description; ?></span>
+                <?php endif; ?>
+                <select <?php $this->link(); ?>>
+                <option value=""><?php _e( '&mdash; Select &mdash;', 'text-domain' ); ?></option>
+                <?php 
+                    foreach( $this->users as $user ) {
+                        printf( '<option value="%s" %s>%s</option>',
+                            $user->data->ID,
+                            selected( $this->value(), $user->data->ID, false ),
+                            $user->data->display_name
+                        );
+                    } 
+                ?>
+                </select>
+            </label>
+        <?php
+    }
+}
+
+
+/**
+ * Add Posts control
+ */
+class WPshed_Customize_Posts_Control extends WP_Customize_Control {
+
+    public $type = 'posts';
+    private $posts = false;
+
+    public function __construct( $manager, $id, $args = array(), $options = array() ) {
+
+        $postargs = wp_parse_args( $options, array( 'numberposts' => '-1' ) );
+        $this->posts = get_posts( $postargs );
+        parent::__construct( $manager, $id, $args );
+    }
+
+    // Render the content
+    public function render_content() {
+
+        if( empty( $this->posts) )
+            return;
+            ?>
+            <label class="customize-control-select">
+                <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+                <?php if ( ! empty( $this->description ) ) : ?>
+                <span class="description customize-control-description"><?php echo $this->description; ?></span>
+                <?php endif; ?>
+                <select <?php $this->link(); ?>>
+                <option value=""><?php _e( '&mdash; Select &mdash;', 'text-domain' ); ?></option>
+                <?php
+                    foreach ( $this->posts as $post ) {
+                        printf( '<option value="%s" %s>%s</option>', 
+                            $post->ID,
+                            selected( $this->value(), $post->ID, false ),
+                            $post->post_title
+                        );
+                    }
+                ?>
+                </select>
+            </label>
+        <?php
+    }
+}
+
+
+/**
+ * Add Post Types control
+ */
+class WPshed_Customize_Post_Type_Control extends WP_Customize_Control {
+    
+    public $type = 'post_types';
+    private $post_types = false;
+
+    public function __construct( $manager, $id, $args = array(), $options = array() ) {
+
+        $postargs = wp_parse_args( $options, array( 'public' => true ) );
+        $this->post_types = get_post_types( $postargs, 'object' );
+        parent::__construct( $manager, $id, $args );
+
+    }
+
+    // Render the content
+    public function render_content() {
+
+        if( empty( $this->post_types ) )
+            return;
+            ?>
+            <label class="customize-control-select">
+                <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+                <?php if ( ! empty( $this->description ) ) : ?>
+                <span class="description customize-control-description"><?php echo $this->description; ?></span>
+                <?php endif; ?>
+                <select <?php $this->link(); ?>>
+                <option value=""><?php _e( '&mdash; Select &mdash;', 'text-domain' ); ?></option>
+                <?php
+                    foreach ( $this->post_types as $k => $post_type ) {
+                        printf('<option value="%s" %s>%s</option>', 
+                            $k,
+                            selected( $this->value(), $k, false ),
+                            $post_type->labels->name
+                        );
+                    }
+                ?>
+                </select>
+            </label>
+        <?php
+    }
+}
+
+
+/**
+ * Add Tags control
+ */
+class WPshed_Customize_Tags_Control extends WP_Customize_Control {
+
+    public $type = 'tags';
+    private $tags = false;
+
+    public function __construct( $manager, $id, $args = array(), $options = array() ) {
+
+        $this->tags = get_tags( $options );
+        parent::__construct( $manager, $id, $args );
+
+    }
+
+    // Render the content
+    public function render_content() {
+        if( empty( $this->tags ) )
+            return;
+        ?>
+            <label class="customize-control-select">
+                <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+                <?php if ( ! empty( $this->description ) ) : ?>
+                <span class="description customize-control-description"><?php echo $this->description; ?></span>
+                <?php endif; ?>
+                <select <?php $this->link(); ?>>
+                <option value=""><?php _e( '&mdash; Select &mdash;', 'text-domain' ); ?></option>
+                <?php foreach ( $this->tags as $tag ) {
+                        printf( '<option value="%s" %s>%s</option>',
+                            $tag->term_id,
+                            selected( $this->value(), $tag->term_id, false ),
+                            $tag->name
+                        );
+                    }
+                ?>
+                </select>
+            </label>
+        <?php
+    }
+}
