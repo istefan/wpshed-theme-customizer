@@ -36,17 +36,167 @@ function wpshed_cf_options_file() {
  */
 function wpshed_cf_register_settings() {
     $options = array();
+
+    // Option type
+    $type = 'theme_mod';
+
     require_once wpshed_cf_options_file();
 
     foreach ( $options as $option ) {
         if ( $option['type'] != 'panel' && $option['type'] != 'section' ) {
-            if ( ! get_option( $option['id'] ) ) {
-                update_option( $option['id'], $option['default'] );
+
+            if ( $type == 'theme_mod' ) {
+                if ( ! get_theme_mod( $option['id'] ) && isset( $option['default'] ) ) {
+                    set_theme_mod( $option['id'], $option['default'] );
+                }
+            } else {
+                if ( ! get_option( $option['id'] ) && isset( $option['default'] ) ) {
+                    update_option( $option['id'], $option['default'] );
+                }
             }
         }
     }
 }
 add_action( 'after_switch_theme', 'wpshed_cf_register_settings' );
+
+
+/**
+ * Work through the stored data and display the components in the desired order, without the disabled components.
+ */
+function wpshed_cf_maybe_apply_restructuring_filter () {
+    $options = get_theme_mod( 'homepage_control' );
+    $components = array();
+
+    if ( isset( $options ) && '' != $options ) {
+        $components = explode( ',', $options );
+
+        $homepage_control_hook = (string)apply_filters( 'homepage_control_hook', 'homepage' );
+
+        // Remove all existing actions on homepage.
+        remove_all_actions( $homepage_control_hook );
+
+        // Remove disabled components
+        $components = wpshed_cf_maybe_remove_disabled_items( $components );
+
+        // Perform the reordering!
+        if ( 0 < count( $components ) ) {
+            $count = 5;
+            foreach ( $components as $k => $v ) {
+                if (strpos( $v, '@' ) !== FALSE) {
+                    $obj_v = explode( '@' , $v );
+                    if ( class_exists( $obj_v[0] ) && method_exists( $obj_v[0], $obj_v[1] ) ) {
+                        add_action( $homepage_control_hook, array( $obj_v[0], $obj_v[1] ), $count );
+                    } // End If Statement
+                } else {
+                    if ( function_exists( $v ) ) {
+                        add_action( $homepage_control_hook, esc_attr( $v ), $count );
+                    }
+                } // End If Statement
+
+                $count + 5;
+            }
+        }
+    }
+
+}
+if ( ! is_admin() ) {
+    add_action( 'get_header', 'wpshed_cf_maybe_apply_restructuring_filter' );
+}
+
+
+/**
+ * Maybe remove disabled items from the main ordered array..
+ */
+function wpshed_cf_maybe_remove_disabled_items( $components ) {
+    if ( 0 < count( $components ) ) {
+        foreach ( $components as $k => $v ) {
+            if ( false !== strpos( $v, '[disabled]' ) ) {
+                unset( $components[ $k ] );
+            }
+        }
+    }
+    return $components;
+}
+
+
+/**
+ * Ensures only array keys matching the original settings specified in add_control() are valid.
+ */
+function wpshed_cf_sanitize_components( $input ) {
+    $valid = wpshed_cf_get_hooked_functions();
+
+    if ( array_key_exists( $input, $valid ) || array_key_exists( str_replace( '[disabled]', '', $input ), $valid ) ) {
+        return $input;
+    } else {
+        return '';
+    }
+}
+
+
+/**
+ * Retrive the functions hooked on to the "woo_homepage" hook.
+ * @return  array An array of the functions, grouped by function name, with a formatted title.
+ */
+function wpshed_cf_get_hooked_functions() {
+    global $wp_filter;
+
+    $response = array();
+
+    $homepage_control_hook = (string)apply_filters( 'homepage_control_hook', 'homepage' );
+
+    if ( isset( $wp_filter[$homepage_control_hook] ) && 0 < count( $wp_filter[$homepage_control_hook] ) ) {
+        foreach ( $wp_filter[$homepage_control_hook] as $k => $v ) {
+            if ( is_array( $v ) ) {
+                foreach ( $v as $i => $j ) {
+                    if ( is_array( $j['function'] ) ) {
+                        $i = get_class( $j['function'][0] ) . '@' . $j['function'][1];
+                        $response[$i] = wpshed_cf_maybe_format_title( $j['function'][1] );
+                    } else {
+                        $response[$i] = wpshed_cf_maybe_format_title( $i );
+                    }
+                }
+            }
+        }
+    }
+
+    return $response;
+}
+
+
+/**
+ * Format a given key into a title.
+ * @return  string A formatted title. If no formatting is possible, return the key.
+ */
+function wpshed_cf_maybe_format_title( $key ) {
+    $prefix = (string)apply_filters( 'hompage_control_prefix', 'wpshed_display_' );
+    $title = $key;
+
+    $title = str_replace( $prefix, '', $title );
+    $title = str_replace( '_', ' ', $title );
+    $title = ucwords( $title );
+
+    return $title;
+}
+
+
+/**
+ * Format an array of components as a comma separated list.
+ * @return  string A list of components separated by a comma.
+ */
+function wpshed_cf_format_defaults() {
+    $components = wpshed_cf_get_hooked_functions();
+    $defaults = array();
+
+    foreach ( $components as $k => $v ) {
+        if ( apply_filters( 'homepage_control_hide_' . $k, false ) ) {
+            $defaults[] = '[disabled]' . $k;
+        } else {
+            $defaults[] = $k;
+        }
+    }
+
+    return join( ',', $defaults );
+}
 
 
 /**
@@ -812,141 +962,3 @@ function wpshed_cf_enqueue_styles() {
     wp_enqueue_style( 'homepage-control-customizer',  esc_url( WPSHED_CF_URI . '/css/customizer.css' ), '', '1.3' );
 }
 add_action( 'customize_controls_enqueue_scripts', 'wpshed_cf_enqueue_styles' );
-
-
-/**
- * Work through the stored data and display the components in the desired order, without the disabled components.
- */
-function wpshed_cf_maybe_apply_restructuring_filter () {
-    $options = get_theme_mod( 'homepage_control' );
-    $components = array();
-
-    if ( isset( $options ) && '' != $options ) {
-        $components = explode( ',', $options );
-
-        $homepage_control_hook = (string)apply_filters( 'homepage_control_hook', 'homepage' );
-
-        // Remove all existing actions on woo_homepage.
-        remove_all_actions( $homepage_control_hook );
-
-        // Remove disabled components
-        $components = wpshed_cf_maybe_remove_disabled_items( $components );
-
-        // Perform the reordering!
-        if ( 0 < count( $components ) ) {
-            $count = 5;
-            foreach ( $components as $k => $v ) {
-                if (strpos( $v, '@' ) !== FALSE) {
-                    $obj_v = explode( '@' , $v );
-                    if ( class_exists( $obj_v[0] ) && method_exists( $obj_v[0], $obj_v[1] ) ) {
-                        add_action( $homepage_control_hook, array( $obj_v[0], $obj_v[1] ), $count );
-                    } // End If Statement
-                } else {
-                    if ( function_exists( $v ) ) {
-                        add_action( $homepage_control_hook, esc_attr( $v ), $count );
-                    }
-                } // End If Statement
-
-                $count + 5;
-            }
-        }
-    }
-}
-if ( ! is_admin() ) {
-    add_action( 'get_header', 'wpshed_cf_maybe_apply_restructuring_filter' );
-}
-
-
-/**
- * Maybe remove disabled items from the main ordered array..
- */
-function wpshed_cf_maybe_remove_disabled_items( $components ) {
-    if ( 0 < count( $components ) ) {
-        foreach ( $components as $k => $v ) {
-            if ( false !== strpos( $v, '[disabled]' ) ) {
-                unset( $components[ $k ] );
-            }
-        }
-    }
-    return $components;
-}
-
-
-/**
- * Ensures only array keys matching the original settings specified in add_control() are valid.
- */
-function wpshed_cf_sanitize_components( $input ) {
-    $valid = wpshed_cf_get_hooked_functions();
-
-    if ( array_key_exists( $input, $valid ) || array_key_exists( str_replace( '[disabled]', '', $input ), $valid ) ) {
-        return $input;
-    } else {
-        return '';
-    }
-}
-
-
-/**
- * Retrive the functions hooked on to the "woo_homepage" hook.
- * @return  array An array of the functions, grouped by function name, with a formatted title.
- */
-function wpshed_cf_get_hooked_functions() {
-    global $wp_filter;
-
-    $response = array();
-
-    $homepage_control_hook = (string)apply_filters( 'homepage_control_hook', 'homepage' );
-
-    if ( isset( $wp_filter[$homepage_control_hook] ) && 0 < count( $wp_filter[$homepage_control_hook] ) ) {
-        foreach ( $wp_filter[$homepage_control_hook] as $k => $v ) {
-            if ( is_array( $v ) ) {
-                foreach ( $v as $i => $j ) {
-                    if ( is_array( $j['function'] ) ) {
-                        $i = get_class( $j['function'][0] ) . '@' . $j['function'][1];
-                        $response[$i] = wpshed_cf_maybe_format_title( $j['function'][1] );
-                    } else {
-                        $response[$i] = wpshed_cf_maybe_format_title( $i );
-                    }
-                }
-            }
-        }
-    }
-
-    return $response;
-}
-
-
-/**
- * Format a given key into a title.
- * @return  string A formatted title. If no formatting is possible, return the key.
- */
-function wpshed_cf_maybe_format_title( $key ) {
-    $prefix = (string)apply_filters( 'hompage_control_prefix', 'woo_display_' );
-    $title = $key;
-
-    $title = str_replace( $prefix, '', $title );
-    $title = str_replace( '_', ' ', $title );
-    $title = ucwords( $title );
-
-    return $title;
-}
-
-
-/**
- * Format an array of components as a comma separated list.
- * @return  string A list of components separated by a comma.
- */
-function wpshed_cf_format_defaults() {
-    $components = wpshed_cf_get_hooked_functions();
-    $defaults = array();
-
-    foreach ( $components as $k => $v ) {
-        if ( apply_filters( 'homepage_control_hide_' . $k, false ) ) {
-            $defaults[] = '[disabled]' . $k;
-        } else {
-            $defaults[] = $k;
-        }
-    }
-
-    return join( ',', $defaults );
-}
