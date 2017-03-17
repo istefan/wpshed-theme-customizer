@@ -23,7 +23,6 @@ $options[] = array( 'title'             => __( 'Theme Options', 'text-domain' ),
                     'theme_supports'    => '',
                     'type'              => 'panel' );
 
-
 /* ---------------------------------------------------------------------------------------------------
     Sections
 --------------------------------------------------------------------------------------------------- */
@@ -246,3 +245,65 @@ $options[] = array( 'title'             => __( 'Menus Field', 'text-domain' ),
                     'option'            => 'menus',
                     'sanitize_callback' => '',
                     'type'              => 'control' );
+
+
+
+/* ---------------------------------------------------------------------------------------------------
+    Panels
+--------------------------------------------------------------------------------------------------- */
+
+// Panel
+$options[] = array( 'title'             => __( 'Front Page Options', 'text-domain' ),
+                    'description'       => '',
+                    'id'                => 'slug_front_page_options',
+                    'priority'          => 10,
+                    'theme_supports'    => '',
+                    'type'              => 'panel' );
+
+/* ---------------------------------------------------------------------------------------------------
+    Sections
+--------------------------------------------------------------------------------------------------- */
+
+$options[] = array( 'title'             => __( 'Front Page Sortable', 'text-domain' ),
+                    'description'       => '',
+                    'panel'             => 'slug_front_page_options',
+                    'id'                => 'slug_section_front_page_sortable',
+                    'priority'          => 10,
+                    'theme_supports'    => '',
+                    'type'              => 'section' );
+
+// Front Page Sections
+for ( $i = 1; $i < 4; $i++ ) { 
+     $options[] = array( 'title'             => __( 'Front Page Section', 'text-domain' ) . ' ' . $i,
+                         'description'       => __( 'Section description', 'text-domain' ),
+                         'panel'             => 'slug_front_page_options',
+                         'id'                => 'slug_section_front_page_' . $i,
+                         'priority'          => 10,
+                         'theme_supports'    => '',
+                         'type'              => 'section' );
+}
+
+/* ---------------------------------------------------------------------------------------------------
+    Controls
+--------------------------------------------------------------------------------------------------- */
+
+// Front Page Elements
+$options[] = array( 'title'             => __( 'Front Page Elements', 'text-domain' ),
+                    'description'       => __( 'Sort / enable / disable elements', 'text-domain' ),
+                    'section'           => 'slug_section_front_page_sortable',
+                    'id'                => 'homepage_control',
+                    'option'            => 'homepage',
+                    'type'              => 'control' );
+
+// Front Page Controls
+for ( $i = 1; $i < 4; $i++ ) { 
+     $options[] = array( 'title'             => __( 'Text Field', 'text-domain' ),
+                         'description'       => '',
+                         'section'           => 'slug_section_front_page_' . $i,
+                         'id'                => 'front_page_text_' . $i,
+                         'default'           => 'Default value ' . $i,
+                         'option'            => 'text',
+                         'sanitize_callback' => 'sanitize_text_field',
+                         'type'              => 'control' );
+}
+
